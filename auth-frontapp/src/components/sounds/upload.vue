@@ -15,30 +15,18 @@ axios.defaults.timeout=1000
 const errorMessage = ref("")
 const submit = async function(){
     console.log("【START】submit#Login")
-    const params = createFormData()
-    await axios.post("http://127.0.0.1:8000/token",params)
-    .then(
-      response => {
-      console.log(response)
-      userStore.token = response.data.access_token
+    const fileInput = document.querySelector('#fileInput');
+    const file = fileInput.files[0];
 
-      router.push({
-        name:'AfterLogin'
-      })
-      }
-    )
-    .catch(error =>{
-      failToAuth.value = true 
-      if(error.status == '401'){
-        errorMessage.value = "認証情報が間違っています"
-      } else {
-        console.log("エラーが発生しました")
-        errorMessage.value = "エラーが発生しました"
-      }
-    })
+    // FormDataオブジェクトを作成
+    const formData = new FormData();
+    formData.append('file', file);
 
-    return 
+// Axiosでリクエスト送信
+axios.post('http://127.0.0.1:8000/uploadfile', formData, {
+
 }
+)}
 
 const createFormData = function() {
     const params = new URLSearchParams();
@@ -71,14 +59,9 @@ const userMe = async function () {
         <div class="input-label">
           <label>email：</label>
         </div>
-        <input type="text" class="form-control" v-model="userStore.username" name="username">
+        <input type="file" class="form-control" name="username" id="fileInput"></input>
       </div>
-      <div class="password">
-        <div class="input-label">
-          <label>password：</label>
-        </div>
-        <input type="password" class="form-control" v-model="userStore.password" name="password">
-      </div>
+
       <div class="button-area">
         <button @click="submit" class="btn btn-outline-primary">login</button>
       </div>

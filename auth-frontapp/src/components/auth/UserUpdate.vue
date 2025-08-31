@@ -69,16 +69,11 @@ const userMe = async function () {
     <div class="form-field">
       <div class="email">
         <div class="input-label">
-          <label>email：</label>
+          <label>username：</label>
         </div>
         <input type="text" class="form-control" v-model="userStore.username" name="username">
       </div>
-      <div class="password">
-        <div class="input-label">
-          <label>password：</label>
-        </div>
-        <input type="password" class="form-control" v-model="userStore.password" name="password">
-      </div>
+
       <div class="button-area">
         <button @click="submit" class="btn btn-outline-primary">login</button>
       </div>

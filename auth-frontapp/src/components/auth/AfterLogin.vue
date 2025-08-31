@@ -1,44 +1,32 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useUserStore } from '../../store/auth/Login';
+import { useUserInfoStore } from '../../store/user';
 import axios from "axios";
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 
 
 const route = useRoute()
 const router = useRouter()
-
-
-const userStore = useUserStore();
+const userAuthStore = useUserStore();
+const userInfoStore = useUserInfoStore()
 const failToAuth = ref(false);
 axios.defaults.timeout=1000
 
-const submit = async function(){
-    console.log("【START】submit#Login")
-    const params = createFormData()
-    const res = await axios.post("http://127.0.0.1:8000/token",params,)
-    .then(
-      res => {
-      console.log(res)
-      userStore.token = res.data.access_token
-      router.push({name:'AfterLogin'})
-      }
-    )
-    
-    .catch(error =>{
-      log(error)
-      failToAuth.value = true 
-    })
+onMounted(() => {
+  axios.get("http://127.0.0.1:8000/users/me", {
+    headers : {
+      accept: 'application/json',
+      Authorization: `Bearer ${userAuthStore.token}`
+    }
+  })
+  .then(res => {
+    console.log(res)
+    userInfoStore.init(res.data.username,res.data.email,20)
+  })
+  
+})
 
-    return 
-}
-
-const createFormData = function() {
-    const params = new URLSearchParams();
-    params.append('username',userStore.username)
-    params.append('password',userStore.password)
-    return params
-}
 </script>
 
 <template>
@@ -50,6 +38,10 @@ const createFormData = function() {
       ログインに成功しました
     </div>
     <router-link to='/'>ログインページへ戻る</router-link>
+    <router-link to='/update'>ユーザー情報の更新</router-link>
+    <div>
+      {{ userInfoStore.username }} さん。こんにちは
+    </div>
   </div>
 </template>
 
